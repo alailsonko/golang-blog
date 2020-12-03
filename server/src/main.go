@@ -6,6 +6,10 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/go-chi/chi"
+	httpSwagger "github.com/swaggo/http-swagger"
+	_ "github.com/swaggo/http-swagger/example/go-chi/docs"
 )
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
@@ -22,9 +26,29 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// @title Swagger Example API
+// @version 1.0
+// @description golang crud.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host golang-crud.swagger.io
+// @BasePath /v2
 func main() {
-	http.HandleFunc("/", sayhelloName)
-	err := http.ListenAndServe(getPort(), nil)
+	r := chi.NewRouter()
+
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL(getURL()),
+	))
+
+	// http.HandleFunc("/", sayhelloName)
+	err := http.ListenAndServe(getPort(), r)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -37,5 +61,15 @@ func getPort() string {
 		port = "9090"
 		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
 	}
+
 	return ":" + port
+}
+func getURL() string {
+	var urlSwagger = os.Getenv("URL_SWAGGER")
+	// Set a default url if there is nothing in the environment
+	if urlSwagger == "" {
+		urlSwagger = "http://localhost:9090/swagger/doc.json"
+		fmt.Println("INFO: No url environment variable detected, defaulting to " + urlSwagger)
+	}
+	return urlSwagger
 }
