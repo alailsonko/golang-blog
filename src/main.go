@@ -32,7 +32,6 @@ func login(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println("err:", err)
 		}
-
 	} else {
 		r.ParseForm()
 		// logic part of log in
