@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -10,55 +10,6 @@ import (
 
 	_ "crud.com/src/docs"
 )
-
-type project struct {
-	id    int
-	techs []string
-	url   string
-}
-
-var projects []project = []project{}
-
-type profile struct {
-	Name    string
-	Hobbies []string
-}
-
-type obj struct {
-	hello string
-}
-
-func postProject(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		body := strings.NewReader(r.Body)
-		var data obj
-		decoder := json.NewDecoder(body).Decode(&data)
-
-		if err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println("this is a post", data)
-	}
-}
-
-func foo(w http.ResponseWriter, r *http.Request) {
-	pro := profile{"alailson", []string{"snowboarding", "skateboarding"}}
-
-	js, err := json.Marshal(pro)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-
-	json.Unmarshal([]byte(js), &pro)
-	fmt.Printf("%s\n", string(js))
-	fmt.Printf("%s\n", pro.Hobbies)
-	fmt.Printf("%s\n", pro.Name)
-	w.Write(js)
-
-}
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
@@ -71,32 +22,25 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("val:", strings.Join(v, ""))
 	}
 	fmt.Fprintf(w, "hello world")
-
 }
 
-// @title Swagger Example API
-// @version 1.0
-// @description golang crud.
-// @termsOfService http://swagger.io/terms/
+func login(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("method:", r.Method) // get request method
+	if r.Method == "GET" {
+		t, _ := template.ParseFiles("login.gtpl")
+		t.Execute(w, nil)
+	} else {
+		r.ParseForm()
+		// logic part of log in
+		fmt.Println("username:", r.Form["username"])
+		fmt.Println("password:", r.Form["password"])
+	}
+}
 
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host golang-crud.swagger.io
-// @BasePath /v2
 func main() {
-	// r := chi.NewRouter()
 
-	http.HandleFunc("/project/", postProject)
 	http.HandleFunc("/", sayhelloName)
-	http.HandleFunc("/json/", foo)
-	// r.Get("/swagger/*", httpSwagger.Handler(
-	// 	httpSwagger.URL(getURL()),
-	// ))
+	http.HandleFunc("/login", login)
 
 	err := http.ListenAndServe(getPort(), nil)
 	if err != nil {
@@ -114,13 +58,3 @@ func getPort() string {
 
 	return ":" + port
 }
-
-// func getURL() string {
-// 	var urlSwagger = os.Getenv("URL_SWAGGER")
-// 	// Set a default url if there is nothing in the environment
-// 	if urlSwagger == "" {
-// 		urlSwagger = "http://localhost:9090/swagger/doc.json"
-// 		fmt.Println("INFO: No url environment variable detected, defaulting to " + urlSwagger)
-// 	}
-// 	return urlSwagger
-// }
