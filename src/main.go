@@ -6,9 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
-
-	_ "crud.com/src/docs"
 )
 
 func sayhelloName(w http.ResponseWriter, r *http.Request) {
@@ -25,9 +24,10 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
+	cwd, _ := os.Getwd()
 	fmt.Println("method:", r.Method) // get request method
 	if r.Method == "GET" {
-		t, _ := template.ParseFiles("login.gtpl")
+		t, _ := template.ParseFiles(filepath.Join(cwd, "./src/login.gtpl"))
 		t.Execute(w, nil)
 	} else {
 		r.ParseForm()
