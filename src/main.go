@@ -28,7 +28,11 @@ func login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("method:", r.Method) // get request method
 	if r.Method == "GET" {
 		t, _ := template.ParseFiles(filepath.Join(cwd, "./src/login.gtpl"))
-		t.Execute(w, nil)
+		err := t.Execute(w, nil)
+		if err != nil {
+			fmt.Println("err:", err)
+		}
+
 	} else {
 		r.ParseForm()
 		// logic part of log in
