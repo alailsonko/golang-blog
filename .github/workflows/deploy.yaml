@@ -15,4 +15,4 @@ jobs:
         heroku_app_name: "golang-crud"
         heroku_email: ${{secrets.HEROKU_API_KEY}}
       env:
-        HD_APP_BASE: "server"
+        HD_APP_BASE: "./"
