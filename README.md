@@ -1,2 +1,2 @@
-# golang-CRUD
-CRUD application using golang packages. 
+# golang-blog
+blog application with MVC architecture.
