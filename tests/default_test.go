@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	_ "golang-CRUD/routers"
 	"net/http"
 	"net/http/httptest"
@@ -24,10 +25,9 @@ func TestBeego(t *testing.T) {
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-	beego.Trace("testing", "TestBeego", "Code[%d]\n%s", w.Code, w.Body.String())
-
 	Convey("Subject: Test Station Endpoint\n", t, func() {
 		Convey("Status Code Should Be 200", func() {
+			fmt.Println("statusCode:", w.Code)
 			So(w.Code, ShouldEqual, 200)
 		})
 		Convey("The Result Should Not Be Empty", func() {
