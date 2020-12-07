@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"golang-CRUD/src/controllers"
+	"golang-CRUD/controllers"
 
 	beego "github.com/astaxie/beego/server/web"
 )

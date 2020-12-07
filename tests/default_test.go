@@ -1,7 +1,7 @@
 package test
 
 import (
-	_ "golang-CRUD/src/routers"
+	_ "golang-CRUD/routers"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
