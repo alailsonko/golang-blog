@@ -12,6 +12,7 @@ import (
 func main() {
 
 	beego.BConfig.Listen.HTTPPort = getPort()
+	beego.BConfig.RunMode = os.Getenv("ENVIRONMENT")
 	beego.Run()
 }
 
