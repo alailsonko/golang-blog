@@ -1,10 +1,11 @@
 package routers
 
 import (
-	"golang-CRUD/controllers"
+	"golang-CRUD/src/controllers"
+
 	beego "github.com/astaxie/beego/server/web"
 )
 
 func init() {
-    beego.Router("/", &controllers.MainController{})
+	beego.Router("/", &controllers.MainController{})
 }
