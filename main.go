@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	_ "golang-CRUD/src/routers"
+	_ "golang-CRUD/routers"
 	"os"
 	"strconv"
 
