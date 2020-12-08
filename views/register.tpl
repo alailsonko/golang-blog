@@ -17,6 +17,7 @@
     {{.Email}}
      
      <h2>
+     {{.flash.error}}
     <button type="submit" >SignUp</button>
 </form>
   <script src="/static/js/reload.min.js"></script>
