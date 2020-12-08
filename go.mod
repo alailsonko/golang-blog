@@ -9,4 +9,5 @@ require (
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/swaggo/swag v1.6.9
+	golang.org/x/crypto v0.0.0-20201203163018-be400aefbc4c
 )
