@@ -3,7 +3,6 @@ package controllers
 import (
 	"fmt"
 	"golang-CRUD/models"
-	"golang-CRUD/models/auth"
 	"log"
 
 	"github.com/astaxie/beego/core/validation"
@@ -46,7 +45,7 @@ func (c *SignUpController) Post() {
 	email := c.GetString("email")
 	password := c.GetString("password")
 	passwordConfirm := c.GetString("passwordConfirm")
-	u := &models.User{Username: username, Email: email, Password: password}
+	u := models.User{Username: username, Email: email, Password: password}
 	valid := validation.Validation{}
 
 	// validate username
@@ -73,7 +72,7 @@ func (c *SignUpController) Post() {
 			}
 		}
 	}
-	s := auth.SaveUser(u)
+	s := models.SaveUser(&u)
 	fmt.Println("saveuser is working:", s)
 	fmt.Println("username:", username)
 	fmt.Println("email:", email)

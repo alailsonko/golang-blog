@@ -1,4 +1,4 @@
-package auth
+package models
 
 import (
 	"fmt"
@@ -8,21 +8,22 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func hashPassword(password string) (string, error) {
+// HashPassword hashing
+func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 
 	return string(bytes), err
 }
 
 // User types
-type User struct {
-	Username string
-	Email    string
-	Password string
-}
+// type User struct {
+// 	Username string
+// 	Email    string
+// 	Password string
+// }
 
 // SaveUser to database
-func (user *User) SaveUser() string {
+func SaveUser(user *User) string {
 
 	o := orm.NewOrm()
 
@@ -30,7 +31,7 @@ func (user *User) SaveUser() string {
 	fmt.Println(dr.Name() == "default")    // true
 	fmt.Println(dr.Type() == orm.DRSqlite) // true
 	fmt.Println("data password:", user.Password)
-	hashedPassword, err := hashPassword(user.Password)
+	hashedPassword, err := HashPassword(user.Password)
 	if err != nil {
 		log.Println(err)
 	}
