@@ -15,13 +15,6 @@ func HashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-// User types
-// type User struct {
-// 	Username string
-// 	Email    string
-// 	Password string
-// }
-
 // SaveUser to database
 func SaveUser(user *User) string {
 
@@ -36,6 +29,28 @@ func SaveUser(user *User) string {
 		log.Println(err)
 	}
 	fmt.Println("hashedPassword:", hashedPassword)
+	u := User{Username: user.Username, Email: user.Email, Password: hashedPassword}
+	// checkUniqueUsername := User{Username: "alailson"}
+	// checkUniqueEmail := User{Email: "aalailson3@gmail.com"}
+	var users []*User
+	numUsername, errUsername := o.QueryTable("user").Filter("username", user.Username).All(&users)
+	numEmail, errEmail := o.QueryTable("user").Filter("email", user.Email).All(&users)
+	fmt.Println("queryTable username init")
+	fmt.Printf("Returned Rows Num: %v, %s\n", numUsername, errUsername)
+	fmt.Println("queryTable username end")
+	fmt.Println("queryTable email init")
+	fmt.Printf("Returned Rows Num: %v, %s\n", numEmail, errEmail)
+	fmt.Println("queryTable email end")
+	if numEmail == numUsername {
+		fmt.Println("email", numEmail, "username", numUsername)
+		id, err := o.Insert(&u)
+		fmt.Printf("ID: %d, ERR: %v\n", id, err)
+		fmt.Println("email", numEmail, "username", numUsername)
+
+	} else {
+		log.Println("user already exist")
+	}
+
 	msg := "working"
 
 	return msg
