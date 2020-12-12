@@ -5,6 +5,7 @@ import (
 	"golang-CRUD/models"
 	"log"
 
+	"github.com/astaxie/beego/client/orm"
 	"github.com/astaxie/beego/core/validation"
 	beego "github.com/astaxie/beego/server/web"
 )
@@ -12,11 +13,6 @@ import (
 // SignUpController logic for signup
 type SignUpController struct {
 	beego.Controller
-}
-
-//Prepare for add to database
-func (c *SignUpController) Prepare() {
-
 }
 
 // Get the page
@@ -33,19 +29,19 @@ func (c *SignUpController) Get() {
 
 // Post receive data
 func (c *SignUpController) Post() {
-
-	// TODO validate the data
-	// TODO handle errors
-	// TODO a model
-	// TODO save data in Database
-	// TODO cryptograph the data
+	// define package
+	o := orm.NewOrm()
 	flash := beego.NewFlash()
 
+	// get data from post method in form
 	username := c.GetString("username")
 	email := c.GetString("email")
 	password := c.GetString("password")
 	passwordConfirm := c.GetString("passwordConfirm")
+	// organize data
 	u := models.User{Username: username, Email: email, Password: password}
+
+	// interface for validation data
 	valid := validation.Validation{}
 
 	// validate username
@@ -60,6 +56,26 @@ func (c *SignUpController) Post() {
 		valid.SetError("password", "passwords does not match")
 	}
 
+	// verify if user exists
+	var users []models.User
+	numUsername, errUsername := o.QueryTable("user").Filter("username", u.Username).All(&users)
+	numEmail, errEmail := o.QueryTable("user").Filter("email", u.Email).All(&users)
+	fmt.Println("queryTable username init")
+	fmt.Printf("Returned Rows Num: %v, %s\n", numUsername, errUsername)
+	fmt.Println("queryTable username end")
+	fmt.Println("queryTable email init")
+	fmt.Printf("Returned Rows Num: %v, %s\n", numEmail, errEmail)
+	fmt.Println("queryTable email end")
+
+	// case user exist throws a error
+	if numEmail != 0 {
+		fmt.Println("email", numEmail, "username", numUsername)
+		valid.SetError("email", "already exists")
+		fmt.Println("email", numEmail, "username", numUsername)
+	} else if numUsername != 0 {
+		valid.SetError("username", "already exists")
+	}
+
 	// show flash message case error
 	if valid.HasErrors() {
 		for _, err := range valid.Errors {
@@ -72,25 +88,15 @@ func (c *SignUpController) Post() {
 			}
 		}
 	}
+	// case all data is valid save in database
 	s := models.SaveUser(&u)
+
 	fmt.Println("saveuser is working:", s)
 	fmt.Println("username:", username)
 	fmt.Println("email:", email)
 	fmt.Println("password:", password)
 	fmt.Println("passwordConfirm:", passwordConfirm)
 	fmt.Println("user:", u)
-	// pk := models.GetCruPkg(pkgname)
-	// if pk.Id == 0 {
-	//     var pp models.PkgEntity
-	//     pp.Pid = 0
-	//     pp.Pathname = pkgname
-	//     pp.Intro = pkgname
-	//     models.InsertPkg(pp)
-	//     pk = models.GetCruPkg(pkgname)
-	// }
-	// var at models.Article
-	// at.Pkgid = pk.Id
-	// at.Content = content
-	// models.InsertArticle(at)
-	c.Ctx.Redirect(302, "/")
+	// redirect user to login
+	c.Ctx.Redirect(200, "/login")
 }
