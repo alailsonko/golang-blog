@@ -19,6 +19,11 @@ type SignInController struct {
 // Get the page
 func (c *SignInController) Get() {
 	// read flash message when making a request
+	v := c.GetSession("sonko")
+	if v != nil {
+		c.Redirect("/", 200)
+		return
+	}
 	flash := beego.ReadFromRequest(&c.Controller)
 	// logic for detect message of flash message
 	if n, ok := flash.Data["error"]; ok {
@@ -75,13 +80,8 @@ func (c *SignInController) Post() {
 			c.SetSession("sonko", int(1))
 			c.Data["num"] = 0
 		}
-
 	}
 
-	// fmt.Println("queryTable email init")
-	// fmt.Printf("Returned Rows Num: %v, %s\n", numPassword, errPassword)
-	// fmt.Println("queryTable email end")
-	// case user exist throws a error
 	if us == 0 {
 		fmt.Println("user", users)
 		valid.SetError("user:", "credentials error")
