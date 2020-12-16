@@ -50,17 +50,25 @@ func (c *SignInController) Post() {
 
 	// verify if user exists
 	var users []models.User
-	numEmail, errEmail := o.QueryTable("user").Filter("email", u.Email).All(&users)
-	fmt.Println("queryTable email init")
-	fmt.Printf("Returned Rows Num: %v, %s\n", numEmail, errEmail)
-	fmt.Println("queryTable email end")
 
+	var cond *orm.Condition
+	cond = orm.NewCondition()
+	cond = cond.And("email", email)
+	var qs orm.QuerySeter
+
+	qs = o.QueryTable("user").SetCond(cond)
+	_, err := qs.All(&users)
+	fmt.Println("password:", users[0].Password, "err:", err)
+
+	// fmt.Println("queryTable email init")
+	// fmt.Printf("Returned Rows Num: %v, %s\n", numPassword, errPassword)
+	// fmt.Println("queryTable email end")
 	// case user exist throws a error
-	if numEmail != 0 {
-		fmt.Println("email", numEmail)
-		valid.SetError("email", "already exists")
-		fmt.Println("email", numEmail)
-	}
+	// if numEmail != 0 {
+	// 	fmt.Println("email", numEmail)
+	// 	valid.SetError("email", "already exists")
+	// 	fmt.Println("email", numEmail)
+	// }
 
 	// show flash message case error
 	if valid.HasErrors() {
@@ -75,9 +83,9 @@ func (c *SignInController) Post() {
 		}
 	}
 	// case all data is valid save in database
-	s := models.SaveUser(&u)
+	// s := models.SaveUser(&u)
 
-	fmt.Println("saveuser is working:", s)
+	// fmt.Println("saveuser is working:", s)
 	fmt.Println("email:", email)
 	fmt.Println("password:", password)
 	fmt.Println("user:", u)

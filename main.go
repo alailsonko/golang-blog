@@ -9,12 +9,26 @@ import (
 
 	"github.com/astaxie/beego/client/orm"
 	beego "github.com/astaxie/beego/server/web"
+	"github.com/beego/beego/v2/server/web/session"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+var globalSessions *session.Manager
 
 func init() {
 	orm.RegisterDriver("sqlite3", orm.DRSqlite)
 	orm.RegisterDataBase("default", "sqlite3", "data.db")
+	sessionconf := &session.ManagerConfig{
+		CookieName:      "gosessionid",
+		EnableSetCookie: true,
+		Gclifetime:      3600,
+		Maxlifetime:     3600,
+		Secure:          false,
+		CookieLifeTime:  3600,
+		ProviderConfig:  "",
+	}
+	globalSessions, _ = session.NewManager("memory", sessionconf)
+	go globalSessions.GC()
 }
 
 func main() {
@@ -34,6 +48,10 @@ func main() {
 	}
 	orm.Debug = true
 	o := orm.NewOrm()
+
+	beego.BConfig.WebConfig.Session.SessionOn = true
+	beego.BConfig.WebConfig.Session.SessionProvider = "file"
+	beego.BConfig.WebConfig.Session.SessionProviderConfig = "./tmp"
 
 	user := models.User{Username: "alailson", Email: "alailson@gmail.com", Password: "mypassword"}
 
