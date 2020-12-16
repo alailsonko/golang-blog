@@ -8,6 +8,7 @@ import (
 	"github.com/astaxie/beego/client/orm"
 	"github.com/astaxie/beego/core/validation"
 	beego "github.com/astaxie/beego/server/web"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // SignInController logic for signup
@@ -57,18 +58,35 @@ func (c *SignInController) Post() {
 	var qs orm.QuerySeter
 
 	qs = o.QueryTable("user").SetCond(cond)
-	_, err := qs.All(&users)
-	fmt.Println("password:", users[0].Password, "err:", err)
+	// fmt.Println(qs)
+	us, err := qs.All(&users)
+	fmt.Println(us)
+	fmt.Println(err)
+	if us == 1 {
+		fmt.Println("password:", users[0].Password, "err:", err)
+		err := bcrypt.CompareHashAndPassword([]byte(users[0].Password), []byte(u.Password))
+		fmt.Println("err: compare:", err)
+		if err != nil {
+			fmt.Println("user", users)
+			valid.SetError("user:", "credentials error")
+			fmt.Println("user", users)
+		}
+		if err == nil {
+			c.SetSession("sonko", int(1))
+			c.Data["num"] = 0
+		}
+
+	}
 
 	// fmt.Println("queryTable email init")
 	// fmt.Printf("Returned Rows Num: %v, %s\n", numPassword, errPassword)
 	// fmt.Println("queryTable email end")
 	// case user exist throws a error
-	// if numEmail != 0 {
-	// 	fmt.Println("email", numEmail)
-	// 	valid.SetError("email", "already exists")
-	// 	fmt.Println("email", numEmail)
-	// }
+	if us == 0 {
+		fmt.Println("user", users)
+		valid.SetError("user:", "credentials error")
+		fmt.Println("user", users)
+	}
 
 	// show flash message case error
 	if valid.HasErrors() {
@@ -90,5 +108,5 @@ func (c *SignInController) Post() {
 	fmt.Println("password:", password)
 	fmt.Println("user:", u)
 	// redirect user to login
-	c.Ctx.Redirect(200, "/login")
+	c.Ctx.Redirect(200, "/")
 }

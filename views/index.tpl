@@ -7,7 +7,7 @@
 </head>
 
 <body>
-   <h2>hello world</h2>
+   <h2>authorized</h2>
 
   <script src="/static/js/reload.min.js"></script>
 </body>
